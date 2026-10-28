@@ -4,3 +4,27 @@ format: html
 editor: visual
 ---
 
+Este documento será utilizado para poder compilar, graficar y presentar los datos 
+en borrador
+
+Primero vamos a analizar el doc de Hubble
+
+```{r}
+data("hubble", package = "gamair")
+
+str(hubble)
+summary(hubble)
+head(hubble)
+
+library(dplyr)
+
+galaxias <- hubble %>%
+  rename(
+    galaxia = Galaxy,
+    distancia = x,
+    velocidad = y
+  )
+
+
+```
+
