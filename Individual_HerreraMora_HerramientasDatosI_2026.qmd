@@ -7,7 +7,7 @@ editor: visual
 Este documento será utilizado para poder compilar, graficar y presentar los datos 
 en borrador
 
-Primero vamos a analizar el doc de Hubble
+Primero vamos a analizar el doc de Hubble que es la base de la investigación
 
 ```{r}
 data("hubble", package = "gamair")
@@ -25,6 +25,35 @@ galaxias <- hubble %>%
     velocidad = y
   )
 
+dim(galaxias) #dimension de dato
+colSums(is.na(galaxias)) #verificar na
+
 
 ```
+
+Tema principal:
+Estimación de la constante de Hubble mediante análisis estadístico
+
+Introducción:
+La expansión del universo es uno de los resultados más importantes en los 
+estudios cosmologicos observados en la historia de esta ciencia. Gracias a las 
+las cosmologicas y la capacidad de calcular las distancias relativamente 
+cercanas entre cuerpos, se ha logrado con una relación aproximadamente lineal 
+entre la distancia de una galaxia y su velocidad de recesión (alejamiento). A 
+esta se le conoce como la ley de Hubble-Lemaitre dada por:
+
+$$v= H_0d$$
+tomando $v$ como la velocidad de recesión, $d$ la distancia y $H_0$ siendo el
+punto vital de la ley, la constante de Hubble, la cual es la tasa de expansión 
+actual del universo.
+
+Para estimar dicha constante se requiere datos de distancias y velocidades. 
+Hay también distancias extragalacticas, pero dependen de metodos muy rigurosos. 
+Por ejemplo, en el proyecto de Hubble Space Telescope Key Project se usaron se 
+usaron datos y herramientas de usos más avanzados como las estrellas variables
+cefeidas y así establecer las distancias y calibrar lo mejor posible $H_0$
+
+
+
+
 
