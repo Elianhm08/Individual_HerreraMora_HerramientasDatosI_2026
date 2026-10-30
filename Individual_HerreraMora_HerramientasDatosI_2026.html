@@ -196,9 +196,31 @@ Adjuntando el paquete: 'dplyr'</code></pre>
 </div>
 </div>
 <p>Tema principal: Estimación de la constante de Hubble mediante análisis estadístico</p>
-<p>Introducción: La expansión del universo es uno de los resultados más importantes en los estudios cosmologicos observados en la historia de esta ciencia. Gracias a las las cosmologicas y la capacidad de calcular las distancias relativamente cercanas entre cuerpos, se ha logrado con una relación aproximadamente lineal entre la distancia de una galaxia y su velocidad de recesión (alejamiento). A esta se le conoce como la ley de Hubble-Lemaitre dada por:</p>
+<p>Introducción: La expansión del universo es uno de los resultados más importantes en los estudios cosmologicos observados en la historia de esta ciencia. Gracias a las las cosmologicas y la capacidad de calcular las distancias relativamente cercanas entre cuerpos, se ha logrado con una relación aproximadamente lineal entre la distancia de una galaxia y su velocidad de recesión (alejamiento). A esta se le conoce como la ley de Hubble-Lemaître dada por:</p>
 <p><span class="math display">\[v= H_0d\]</span> tomando <span class="math inline">\(v\)</span> como la velocidad de recesión, <span class="math inline">\(d\)</span> la distancia y <span class="math inline">\(H_0\)</span> siendo el punto vital de la ley, la constante de Hubble, la cual es la tasa de expansión actual del universo.</p>
-<p>Para estimar dicha constante se requiere datos de distancias y velocidades. Hay también distancias extragalacticas, pero dependen de metodos muy rigurosos. Por ejemplo, en el proyecto de Hubble Space Telescope Key Project se usaron se usaron datos y herramientas de usos más avanzados como las estrellas variables cefeidas y así establecer las distancias y calibrar lo mejor posible <span class="math inline">\(H_0\)</span></p>
+<p>Para estimar dicha constante se requiere datos de distancias y velocidades. Hay también distancias extragalacticas, pero dependen de metodos muy rigurosos. Por ejemplo, en el proyecto de Hubble Space Telescope Key Project se usaron se usaron datos y herramientas de usos más avanzados como las estrellas variables cefeidas y así establecer las distancias y calibrar lo mejor posible <span class="math inline">\(H_0\)</span> (Freedman et al., 2001).</p>
+<p>Para efectos de esta investigación se examinaran observaciones de galaxias, ajustaran modelos de regresión para lograr con un estudio sobre la incertidumbre y sensibilidad de las estimaciones. Y así, realizar una estimación estadistica, cuidando la interpretación física.</p>
+<p>Objetivo: Estimar la constante de Hubble a partir de observaciones de distancias y velocidades de galaxias cercanas, comprobando con los modelos de regresión lineal de R, consiguiendo la incertidumbre y sensibilidad de la estimación.</p>
+<p>Metodología:</p>
+<p>Para el desarrollo de este proyecto se utilizaran datos astronomicos ya publicados y metodos estadisticos de R. Cargando como base de datos el documento “Hubble” del paquete “gamair”. En este se encuentran 24 galaxias con sus debidas distancias y velocidades de recesión.</p>
+<p>Sobre estos datos se aplicarán distintos modelos de regresión lineal basados en la ley de Hubble-Lemaître, con la función lm().</p>
+<p>Primeramente se usará un modelo sin intercepto, sobre cada galaxia i:</p>
+<p><span class="math display">\[
+v_i = H_0 d_i + \varepsilon_i,
+\]</span> Utilizando minimos cuadrados ordinarios para buscar la constante:</p>
+<p><span class="math inline">\(S(H_0)=\sum_{i=1}^{n}(v_i-H_0d_i)^2.\)</span></p>
+<p>Luego de derivar y despejar, la constante tendrá como formula:</p>
+<p><span class="math inline">\(\widehat H_0=\frac{\sum_{i=1}^{n}d_i v_i}{\sum_{i=1}^{n}d_i^2}.\)</span></p>
+<p>Además, se apilcará otro modelo con intercepto:</p>
+<p><span class="math inline">\(v_i = \beta_0 + \beta_1 d_i + \varepsilon_i\)</span></p>
+<p>Con el mismo metodo de minimos cuadrados ordinarios, con una formula sobre cada galaxia para obtener la constante:</p>
+<p><span class="math display">\[
+\widehat H_0=\frac{\sum_{i=1}^{n} (d_i - \bar d) (v_i- \bar v)}{\sum_{i=1}^{n}d_i^2}.
+\]</span></p>
+<p><span class="math inline">\(\bar d=\frac{1}{d} \sum_{i=1}^{n} d_i\)</span></p>
+<p><span class="math inline">\(\bar v=\frac{1}{v} \sum_{i=1}^{n} v_i\)</span></p>
+<p>Este permitira examinar interceptos, pendientes y diferencia entre <span class="math inline">\(\widehat H_0\)</span> y <span class="math inline">\(\beta_1\)</span>. Además será una comparación sobre el primero modelo en lo estadistico y sensibilidad.</p>
+<p>Es decir, con estos modelos se logrará estimar la tasa actual de expansión local del universo. Por lo que, no se buscará demostrar que la expansión acelera, solo cumplirá con la estimación y evaluación en relación a las distancias y velocidades.</p>
 
 </main>
 <!-- /main column -->
