@@ -1,43 +1,37 @@
 ---
-title: "Individual_HerreraMora_HerramientasDatosI_2026"
-format: html
-editor: visual
+title: "Estimación de la constante de Hubble"
+subtitle: "Universidad de Costa Rica · Herramientas de Datos I · II ciclo 2026"
+author:
+  - "Herrera Mora, Elián C4G042"
+date: 07-11-2026
+lang: es
+number-sections: true
+
+format:
+  typst:
+    fontsize: 12pt
+    papersize: us-letter
+    margin:
+      x: 2.5cm
+      y: 2.3cm
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
-Este documento será utilizado para poder compilar, graficar y presentar los datos 
-en borrador
-
-Primero vamos a analizar el doc de Hubble que es la base de la investigación
-
 ```{r}
-data("hubble", package = "gamair")
-
-str(hubble)
-summary(hubble)
-head(hubble)
+#| include: false
 
 library(dplyr)
-
-galaxias <- hubble %>%
-  rename(
-    galaxia = Galaxy,
-    distancia = x,
-    velocidad = y
-  )
-
-dim(galaxias) #dimension de dato
-colSums(is.na(galaxias)) #verificar na
-
-
+library(ggplot2)
 ```
 
-Tema principal:
-Estimación de la constante de Hubble mediante análisis estadístico
 
-Introducción:
+# Introducción:
 La expansión del universo es uno de los resultados más importantes en los 
-estudios cosmologicos observados en la historia de esta ciencia. Gracias a las 
-las cosmologicas y la capacidad de calcular las distancias relativamente 
+estudios cosmologicos observados en la historia de esta ciencia. Gracias a las
+cosmologicas y la capacidad de calcular las distancias relativamente 
 cercanas entre cuerpos, se ha logrado con una relación aproximadamente lineal 
 entre la distancia de una galaxia y su velocidad de recesión (alejamiento). A 
 esta se le conoce como la ley de Hubble-Lemaître dada por:
@@ -50,28 +44,43 @@ actual del universo.
 
 Para estimar dicha constante se requiere datos de distancias y velocidades. 
 Hay también distancias extragalacticas, pero dependen de metodos muy rigurosos. 
-Por ejemplo, en el proyecto de Hubble Space Telescope Key Project se usaron se 
-usaron datos y herramientas de usos más avanzados como las estrellas variables
-cefeidas y así establecer las distancias y calibrar lo mejor posible $H_0$ 
-(Freedman et al., 2001).
-
+Por ejemplo, en el proyecto de Hubble Space Telescope Key Project se usaron
+datos y herramientas de usos más avanzados como medidas fotometricas, distancia 
+sin y con corrección por metalicidad para calibrar lo mejor posible $H_0$
+(Freedman et al., 2001, p. 59).
 
 Para efectos de esta investigación se examinaran observaciones de galaxias, 
 ajustaran modelos de regresión para lograr con un estudio sobre la incertidumbre 
 y sensibilidad de las estimaciones. Y así, realizar una estimación estadistica,
 cuidando la interpretación física.
 
-
-Objetivo:
+# Objetivo:
 Estimar la constante de Hubble a partir de observaciones de distancias y 
 velocidades de galaxias cercanas, comprobando con los modelos de regresión lineal
 de R, consiguiendo la incertidumbre y sensibilidad de la estimación.
 
-Metodología:
+# Metodología:
 
-Para el desarrollo de este proyecto se utilizaran datos astronomicos ya publicados y metodos estadisticos de R. Cargando como base de datos el documento "Hubble" del paquete "gamair". En este se encuentran 24 galaxias con sus debidas distancias y velocidades de recesión. 
+Para el desarrollo de este proyecto se utilizaran datos astronomicos ya publicados
+y metodos estadisticos de R. Cargando como base de datos el documento "Hubble" del paquete "gamair". 
+En este se encuentran 24 galaxias que contiene la distancia estimada desde la Tierra
+a la posición de cada galaxia dada en megaparsecs (Mpc) que cada uno equivale a
+3,26 millones de años luz y la velocidad de recesión de la galaxia, en km/s. 
 
-Sobre estos datos se aplicarán distintos modelos de regresión lineal basados en la ley de Hubble-Lemaître, con la función lm().
+De paso, hay que tomar en cuenta que la distancia se deben a calculos más 
+rigurosos con unas estrellas llamadas cefeídas, las cuales varían su brillo, 
+tamaño y temperatura regular y periodicamente. Esto aplicando una relación
+entre la variación y periocidad de su brillo (NASA et al., 2016). Además, para
+el cálculo de la velocidad de recesión se hace identificando el corrimiento el
+rojo. Este corresponde al aumento de la longitud de la onda de luz observada. 
+Luego de pasar por correciones astronomicas por el movimiento gravitacional se 
+tienen los resultados que conocemos(Freedman et al., 2001).
+
+
+Sobre estos datos se aplicarán distintos modelos de regresión lineal basados 
+en la ley de Hubble-Lemaître,
+$$v= H_0d$$
+con la función lm() de R.
 
 
 Primeramente se usará un modelo sin intercepto, sobre cada galaxia i:
@@ -79,30 +88,224 @@ Primeramente se usará un modelo sin intercepto, sobre cada galaxia i:
 $$
 v_i = H_0 d_i + \varepsilon_i,
 $$
-Utilizando minimos cuadrados ordinarios para buscar la constante:
-
-$S(H_0)=\sum_{i=1}^{n}(v_i-H_0d_i)^2.$
-
-
-Luego de derivar y despejar, la constante tendrá como formula:
-
-$\widehat H_0=\frac{\sum_{i=1}^{n}d_i v_i}{\sum_{i=1}^{n}d_i^2}.$
 
 Además, se apilcará otro modelo con intercepto:
 
 $v_i = \beta_0 + \beta_1 d_i + \varepsilon_i$
 
-Con el mismo metodo de minimos cuadrados ordinarios, con una formula sobre cada galaxia para obtener la constante:
+Con estos modelos se logrará estimar la tasa actual de expansión 
+local del universo. Por lo que, no se buscará demostrar que la expansión 
+acelera, solo cumplirá con la estimación y evaluación en relación a 
+las distancias y velocidades.
 
-$$
-\widehat H_0=\frac{\sum_{i=1}^{n} (d_i - \bar d) (v_i- \bar v)}{\sum_{i=1}^{n}d_i^2}.
-$$
+```{r}
+#| include: false
 
-$\bar d=\frac{1}{d} \sum_{i=1}^{n} d_i$  
+source("cod/modelo_sin_intercepto.R")
+source("cod/modelo_con_intercepto.R")
+source("cod/comparacion_modelos.R")
+```
 
-$\bar v=\frac{1}{v} \sum_{i=1}^{n} v_i$
+# Resultados
 
-Este permitira examinar interceptos, pendientes y diferencia entre $\widehat H_0$ y $\beta_1$. Además será una comparación sobre el primero modelo en lo estadistico y sensibilidad. 
+## Análisis exploratorio
 
-Es decir, con estos modelos se logrará estimar la tasa actual de expansión local del universo. Por lo que, no se buscará demostrar que la expansión acelera, solo cumplirá con la estimación y evaluación en relación a las distancias y velocidades.
+En la Tabla 1 se presentan las principales estadísticas sobre
+las variables analizadas, entre esas su promedio, desviación estándar, 
+valores mínimo y máximo. Estas permiten entender mejor la variabilidad
+de las observaciones y su distribución.
 
+```{r}
+#| label: tbl-estadisticas
+#| tbl-cap: "Estadísticas descriptivas de las distancias y velocidades de las galaxias."
+#| echo: false
+
+library(dplyr)
+library(knitr)
+
+tabla1 <- bind_rows(
+  galaxias %>%
+    summarise(
+      Variable = "Distancia (Mpc)",
+      n = sum(!is.na(distancia)),
+      Media = mean(distancia, na.rm = TRUE),
+      Desviacion = sd(distancia, na.rm = TRUE),
+      Minimo = min(distancia, na.rm = TRUE),
+      Maximo = max(distancia, na.rm = TRUE)
+    ),
+
+  galaxias %>%
+    summarise(
+      Variable = "Velocidad (km/s)",
+      n = sum(!is.na(velocidad)),
+      Media = mean(velocidad, na.rm = TRUE),
+      Desviacion = sd(velocidad, na.rm = TRUE),
+      Minimo = min(velocidad, na.rm = TRUE),
+      Maximo = max(velocidad, na.rm = TRUE)
+    )
+)
+
+knitr::kable(
+  tabla1,
+  digits = 2,
+  booktabs = TRUE,
+  col.names = c(
+    "Variable", "n", "Media",
+    "Desviación estándar", "Mínimo", "Máximo"
+  )
+)
+```
+
+El diagrama de dispersión presentado en la Figura 1 permite observar una
+tendencia creciente entre la distancia y la velocidad de recesión de las 24 
+galaxias. Esta se puede representar mejor mediante el coeficiente de 
+correlación de Pearson, que fue de 0.8632, dando así una asociación lineal 
+positiva fuerte entre ambos datos.
+
+A pesar de esta relación, las observaciones presentan cierta dispersión 
+alrededor del comportamiento lineal, es decir que las velocidades 
+registradas no aumentan de manera perfectamente proporcional a las distancias.
+Estas diferencias pueden estar relacionadas con movimientos peculiares de 
+las galaxias y con las incertidumbres propias de las mediciones astronómicas. 
+Algunas de estas se peculiaridades concurren a más metodos como el efecto de
+Sunyaev-Zeldovich(Freedman et al., 2001, p. 67).
+
+```{r}
+#| label: fig-relacion
+#| fig-cap: "Relación entre la distancia y la velocidad de recesión de las galaxias."
+#| echo: false
+#| fig-width: 6
+#| fig-height: 3
+
+library(ggplot2)
+
+correlacion <- cor(
+  galaxias$distancia,
+  galaxias$velocidad,
+  use = "complete.obs",
+  method = "pearson"
+)
+
+ggplot(galaxias,
+       aes(x = distancia, y = velocidad)) +
+  geom_point(
+    color = "steelblue",
+    size = 3,
+    alpha = 0.85
+  ) +
+  labs(
+    title = "Distancia y velocidad de recesión",
+    subtitle = paste(
+      "Correlación de Pearson:",
+      round(correlacion, 4)
+    ),
+    x = "Distancia (Mpc)",
+    y = "Velocidad de recesión (km/s)"
+  ) +
+  theme_minimal()
+```
+
+## Estimación de la constante de Hubble
+
+El modelo de regresión sin intercepto calculo una estimación de la constante 
+de Hubble de **76.58 km/s/Mpc**, con un intervalo de confianza del 95 % de 
+**[68.38, 84.78] km/s/Mpc**. Este resultado constituye la estimación principal
+obtenida a partir de la relación entre las distancias y las velocidades observadas.
+
+En la Figura 2 está representado el ajuste de este primer modelo,
+donde se ve que la recta de regresión pasa por el origen y describe 
+una relación estimada entre ambas variables.
+
+```{r}
+#| label: fig-modelo-sin-intercepto
+#| fig-cap: "Modelo A: regresión lineal sin intercepto."
+#| echo: false
+#| fig-width: 6
+#| fig-height: 3
+
+print(grafico.sin)
+```
+
+Por otra parte, el modelo con intercepto estimo la siguiente ecuación:
+
+\[
+\widehat{v}=6.70+76.13d.
+\]
+
+La pendiente fue de **76.13 km/s/Mpc**, mientras que el 
+intercepto fue de **6.70 km/s**. Su intervalo de confianza 
+del 95 % para la pendiente fue de **[56.44, 95.82] km/s/Mpc**.
+
+La Figura 3 presenta el ajuste de este segundo modelo, donde la recta
+contiene el intercepto estimado y así comparar mejor su 
+comportamiento en cuanto al modelo anterior.
+
+```{r}
+#| label: fig-modelo-con-intercepto
+#| fig-cap: "Modelo B: regresión lineal con intercepto."
+#| echo: false
+#| fig-width: 7
+#| fig-height: 4
+
+print(grafica.con)
+```
+
+## Comparación de los modelos
+
+La comparación de las pendientes muestra una diferencia absoluta de
+0.45 km/s/Mpc, es decir una variación relativa de aproximadamente un
+**0.59 %**. Esto permite decir que la estimación de un intercepto 
+camia muy poco la pendiente obtenida.
+
+Para facilitar la comparación visual de ambos modelos ajustados, 
+en la Figura 4 se presentan conjuntamente las rectas de regresión estimadas. 
+Se observa que ambas mantienen un comportamiento muy similar, lo cual coincide 
+con la pequeña diferencia obtenida entre sus pendientes. Asimismo, la 
+representación permite apreciar que la incorporación del intercepto genera 
+una modificación reducida en la recta estimada.
+
+```{r}
+#| label: fig-comp
+#| fig-cap: "Comparación de los gráficos de ambos modelos"
+#| echo: false
+#| fig-width: 6
+#| fig-height: 3
+
+print(grafico.compa)
+```
+
+Asimismo, la prueba F de comparación de modelos anidados produjo un 
+valor p aproximado de **0.9583**. Esto nos quiere decir que no se 
+encontró una necesidad estadistica de implementar intercepto.
+
+De misma manera el calculo de los errores de ambos presentaron similitudes, con
+aproximadamente **253.48 km/s** para el modelo sin intercepto y **253.47 km/s** 
+para el modelo con intercepto. Por tanto, la inclusión del parametro no provocó 
+un gran impacto sobre los calculos.
+
+De esta forma, se seleccionó el modelo sin intercepto como modelo principal, 
+debido a su correspondencia con la formulación idealizada de la ley de
+Hubble-Lemaître y a que la incorporación de un parámetro adicional no 
+produjo una mejora estadísticamente significativa. Es decir, se presenta un 
+resultado estimado de **76.58 km/s/Mpc**.
+
+Hay que tomar en cuenta que la estimación se trabaja sobre una muestra 
+específica de galaxias y que las mediciones astronómicas presentan 
+incertidumbre. Por tanto, el resultado es una aproximación de 
+la constante de Hubble sobre los datos aplicados.
+
+# Referencias
+
+Freedman, W. L., Madore, B. F., Gibson, B. K., Ferrarese, L., Kelson, D. D., Sakai, S., Mould, J. R., Kennicutt, R. C., Jr., Ford, H. C., Graham, J. A., Huchra, J. P., Hughes, S. M. G., Illingworth, G. D., Macri, L. M., & Stetson, P. B. (2001). Final results from the Hubble Space Telescope Key Project to measure the Hubble constant. The Astrophysical Journal, 553(1), 47–72. https://doi.org/10.1086/320638
+
+NASA. (2016, 2 de junio). Three steps to Hubble constant (artist's illustration) [Ilustración]. NASA Science. https://science.nasa.gov/asset/hubble/three-steps-to-hubble-constant-artists-illustration/
+
+R Core Team. (2026). R: A language and environment for statistical computing. R Foundation for Statistical Computing. https://www.R-project.org/
+
+Wood, S. N. (2006). Generalized additive models: An introduction with R. Chapman & Hall/CRC.
+
+Wood, S. N. (2019). gamair: Data for GAMs: An Introduction with R (Version 1.0-2) [Paquete de R]. CRAN. https://doi.org/10.32614/CRAN.package.gamair
+
+Link del repositorio: 
+
+https://github.com/Elianhm08/Individual_HerreraMora_HerramientasDatosI_2026
